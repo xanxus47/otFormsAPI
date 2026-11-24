@@ -1,4 +1,4 @@
-import type { OtafFormData, OtafRecord } from './types'
+import { withPrintedOtafFields, type OtafFormData, type OtafRecord } from './types'
 
 /** In-memory store for local/dev. Replace with D1/KV/Neon for production. */
 const records = new Map<string, OtafRecord>()
@@ -25,6 +25,7 @@ export function getOtaf(id: string): OtafRecord | undefined {
 export function createOtaf(data: OtafFormData): OtafRecord {
   const id = crypto.randomUUID()
   const ts = nowIso()
+  data = withPrintedOtafFields(data)
   const record: OtafRecord = {
     ...data,
     id,
@@ -43,10 +44,11 @@ export function updateOtaf(id: string, data: OtafFormData): OtafRecord | undefin
   for (const [key, value] of Object.entries(data) as [keyof OtafFormData, OtafFormData[keyof OtafFormData]][]) {
     if (value !== undefined) merged[key] = value as never
   }
+  const normalized = withPrintedOtafFields(merged)
   const record: OtafRecord = {
-    ...merged,
+    ...normalized,
     id: existing.id,
-    controlNumber: merged.controlNumber?.trim() || existing.controlNumber,
+    controlNumber: normalized.controlNumber?.trim() || existing.controlNumber,
     createdAt: existing.createdAt,
     updatedAt: nowIso(),
   }

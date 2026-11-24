@@ -11,7 +11,7 @@ import { encode as encodeQr } from 'uqr'
 import { toPrintedName } from '../printed-name'
 import { encodeCode128B } from './barcode'
 import { drawCalendarIcon, drawClockIcon } from './icons'
-import type { EmploymentStatus, OtafFormData } from './types'
+import { withPrintedOtafFields, type EmploymentStatus, type OtafFormData } from './types'
 
 const PAGE_W = 595
 const PAGE_H = 842
@@ -218,9 +218,10 @@ function statusChecked(data: OtafFormData, key: EmploymentStatus): boolean {
 }
 
 export async function generateOtafPdf(
-  data: OtafFormData,
+  rawData: OtafFormData,
   logoBytes: ArrayBuffer | Uint8Array,
 ): Promise<Uint8Array> {
+  const data = withPrintedOtafFields(rawData)
   const pdf = await PDFDocument.create()
   const page = pdf.addPage([PAGE_W, PAGE_H])
   const fonts: Fonts = {

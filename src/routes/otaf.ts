@@ -2,7 +2,7 @@ import { Hono, type Context } from 'hono'
 import logoBytes from '../../assets/LGU-otaf.png'
 import { generateOtafPdf } from '../lib/otaf/generate-otaf'
 import { createOtaf, deleteOtaf, getOtaf, listOtaf, updateOtaf } from '../lib/otaf/store'
-import type { EmploymentStatus, OtafFormData } from '../lib/otaf/types'
+import { withPrintedOtafFields, type EmploymentStatus, type OtafFormData } from '../lib/otaf/types'
 
 const otaf = new Hono()
 
@@ -82,7 +82,7 @@ function parseOtafData(
     }
     data[key] = get(key) as never
   }
-  return data
+  return withPrintedOtafFields(data)
 }
 
 async function readBody(c: Context, opts?: { sparse?: boolean }): Promise<OtafFormData> {
@@ -175,6 +175,7 @@ function formPage(): string {
       background: #fff;
       color: var(--text);
     }
+    .printed { text-transform: uppercase; }
     textarea { min-height: 72px; resize: vertical; }
     .status {
       display: flex;
@@ -223,10 +224,10 @@ function formPage(): string {
         <legend>Control</legend>
         <div class="grid">
           <label>OTA Control Number
-            <input name="controlNumber" placeholder="OTA-2026-000001" value="OTA-2026-000001" />
+            <input class="printed" name="controlNumber" placeholder="OTA-2026-000001" value="OTA-2026-000001" autocapitalize="characters" oninput="this.value=this.value.toUpperCase()" />
           </label>
           <label>Date Requested
-            <input name="dateRequested" placeholder="MM/DD/YYYY" />
+            <input class="printed" name="dateRequested" placeholder="MM/DD/YYYY" autocapitalize="characters" oninput="this.value=this.value.toUpperCase()" />
           </label>
         </div>
       </fieldset>
@@ -235,16 +236,16 @@ function formPage(): string {
         <legend>Employee Information</legend>
         <div class="grid">
           <label>1. Employee Name
-            <input name="employeeName" required />
+            <input class="printed" name="employeeName" required autocapitalize="characters" oninput="this.value=this.value.toUpperCase().replace(/[^A-ZÑ\\s.,'-]/g,'')" />
           </label>
           <label>2. Employee ID
-            <input name="employeeId" />
+            <input class="printed" name="employeeId" autocapitalize="characters" oninput="this.value=this.value.toUpperCase()" />
           </label>
           <label>3. Position
-            <input name="position" />
+            <input class="printed" name="position" autocapitalize="characters" oninput="this.value=this.value.toUpperCase()" />
           </label>
           <label>4. Office / Department
-            <input name="officeDepartment" />
+            <input class="printed" name="officeDepartment" autocapitalize="characters" oninput="this.value=this.value.toUpperCase()" />
           </label>
         </div>
         <div class="status">
@@ -256,19 +257,19 @@ function formPage(): string {
         </div>
         <div class="grid">
           <label>Others (specify)
-            <input name="employmentStatusOther" />
+            <input class="printed" name="employmentStatusOther" autocapitalize="characters" oninput="this.value=this.value.toUpperCase()" />
           </label>
           <label>6. Date of Overtime
-            <input name="dateOfOvertime" placeholder="MM/DD/YYYY" />
+            <input class="printed" name="dateOfOvertime" placeholder="MM/DD/YYYY" autocapitalize="characters" oninput="this.value=this.value.toUpperCase()" />
           </label>
           <label>7. Time In
-            <input name="timeIn" placeholder="05:00 PM" />
+            <input class="printed" name="timeIn" placeholder="05:00 PM" autocapitalize="characters" oninput="this.value=this.value.toUpperCase()" />
           </label>
           <label>8. Time Out
-            <input name="timeOut" placeholder="09:00 PM" />
+            <input class="printed" name="timeOut" placeholder="09:00 PM" autocapitalize="characters" oninput="this.value=this.value.toUpperCase()" />
           </label>
           <label>9. Estimated Total Hours
-            <input name="estimatedTotalHours" placeholder="04:00" />
+            <input class="printed" name="estimatedTotalHours" placeholder="04:00" autocapitalize="characters" oninput="this.value=this.value.toUpperCase()" />
           </label>
         </div>
         <label>10. Purpose / Justification
@@ -279,7 +280,7 @@ function formPage(): string {
             <textarea name="activityProject"></textarea>
           </label>
           <label>12. Funding Source
-            <textarea name="fundingSource"></textarea>
+            <textarea class="printed" name="fundingSource" autocapitalize="characters" oninput="this.value=this.value.toUpperCase()"></textarea>
           </label>
         </div>
       </fieldset>
@@ -288,31 +289,31 @@ function formPage(): string {
         <legend>Approvals</legend>
         <div class="grid three">
           <label>13. Supervisor Name
-            <input name="supervisorName" />
+            <input class="printed" name="supervisorName" autocapitalize="characters" oninput="this.value=this.value.toUpperCase().replace(/[^A-ZÑ\\s.,'-]/g,'')" />
           </label>
           <label>Supervisor Position
-            <input name="supervisorPosition" />
+            <input class="printed" name="supervisorPosition" autocapitalize="characters" oninput="this.value=this.value.toUpperCase()" />
           </label>
           <label>Supervisor Date
-            <input name="supervisorDate" />
+            <input class="printed" name="supervisorDate" autocapitalize="characters" oninput="this.value=this.value.toUpperCase()" />
           </label>
           <label>14. Department Head Name
-            <input name="departmentHeadName" />
+            <input class="printed" name="departmentHeadName" autocapitalize="characters" oninput="this.value=this.value.toUpperCase().replace(/[^A-ZÑ\\s.,'-]/g,'')" />
           </label>
           <label>Dept Head Position
-            <input name="departmentHeadPosition" />
+            <input class="printed" name="departmentHeadPosition" autocapitalize="characters" oninput="this.value=this.value.toUpperCase()" />
           </label>
           <label>Dept Head Date
-            <input name="departmentHeadDate" />
+            <input class="printed" name="departmentHeadDate" autocapitalize="characters" oninput="this.value=this.value.toUpperCase()" />
           </label>
           <label>15. HRMO Name
-            <input name="hrmoName" />
+            <input class="printed" name="hrmoName" autocapitalize="characters" oninput="this.value=this.value.toUpperCase().replace(/[^A-ZÑ\\s.,'-]/g,'')" />
           </label>
           <label>HRMO Position
-            <input name="hrmoPosition" />
+            <input class="printed" name="hrmoPosition" autocapitalize="characters" oninput="this.value=this.value.toUpperCase()" />
           </label>
           <label>HRMO Date
-            <input name="hrmoDate" />
+            <input class="printed" name="hrmoDate" autocapitalize="characters" oninput="this.value=this.value.toUpperCase()" />
           </label>
         </div>
       </fieldset>
@@ -321,13 +322,13 @@ function formPage(): string {
         <legend>Employee Signature & Verification</legend>
         <div class="grid">
           <label>16. Employee Signature Name
-            <input name="employeeSignatureName" style="text-transform:uppercase" autocapitalize="characters" oninput="this.value=this.value.toUpperCase().replace(/[^A-ZÑ\\s.'-]/g,'')" />
+            <input class="printed" name="employeeSignatureName" autocapitalize="characters" oninput="this.value=this.value.toUpperCase().replace(/[^A-ZÑ\\s.,'-]/g,'')" />
           </label>
           <label>Employee Signature Date
-            <input name="employeeSignatureDate" />
+            <input class="printed" name="employeeSignatureDate" autocapitalize="characters" oninput="this.value=this.value.toUpperCase()" />
           </label>
           <label>Verification Code
-            <input name="verificationCode" placeholder="Auto from control no. if blank" />
+            <input class="printed" name="verificationCode" placeholder="Auto from control no. if blank" autocapitalize="characters" oninput="this.value=this.value.toUpperCase()" />
           </label>
           <label>Verification URL (QR)
             <input name="verificationUrl" placeholder="https://hr.magsaysay.gov.ph/verify/..." />

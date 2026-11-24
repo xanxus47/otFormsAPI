@@ -1,5 +1,5 @@
 /** Official printed names: A–Z only, always ALL CAPS. */
-const PRINTED_NAME = /[^A-ZÑ\s.'-]/g
+const PRINTED_NAME = /[^A-ZÑ\s.,'-]/g
 
 export function toPrintedName(name?: string): string | undefined {
   if (!name) return undefined
